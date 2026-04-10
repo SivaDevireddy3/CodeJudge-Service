@@ -42,16 +42,17 @@ public class Problem {
 
     private Integer points = 100;
 
-    @Column(name = "acceptance_count")
+    @Column(name = "acceptance_count", columnDefinition = "integer default 0")
     private Integer acceptanceCount = 0;
 
-    @Column(name = "total_submissions")
+    @Column(name = "total_submissions", columnDefinition = "integer default 0")
     private Integer totalSubmissions = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User createdBy;
 
+    @Column(columnDefinition = "boolean default true")
     private boolean active = true;
 
     @CreationTimestamp
@@ -67,8 +68,9 @@ public class Problem {
     private List<TestCase> testCases = new ArrayList<>();
 
     public String getAcceptanceRate() {
-        if (totalSubmissions == 0) return "0.0%";
-        double rate = (acceptanceCount * 100.0) / totalSubmissions;
+        if (totalSubmissions == null || totalSubmissions == 0) return "0.0%";
+        int accepted = acceptanceCount != null ? acceptanceCount : 0;
+        double rate = (accepted * 100.0) / totalSubmissions;
         return String.format("%.1f%%", rate);
     }
 }
